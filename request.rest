@@ -1,0 +1,33 @@
+GET http://localhost:4000/book
+####
+POST  http://localhost:4000/activecccount
+Content-Type: application/json
+
+{
+    "email":"h-loc@astem-co.co.jp"
+}
+###
+POST   http://localhost:4000/login
+Content-Type: application/json
+
+{
+    "username":"lockheart",
+    "password":"123456"
+}
+###
+
+GET http://localhost:4000/user/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTY5MTU3NTM2MywiZXhwIjoxNjkxNjYxNzYzfQ.SdYMYtvYRbMkpaZDOZ-cTabA3FGMiB0hDImEIkRzLbU
+Content-Type: application/json
+###
+POST   http://localhost:4000/user/book/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTY5MTYzNTc3NSwiZXhwIjoxNjkxNzIyMTc1fQ.H4ZMsI3pPBqkinVEvrsQ9taQdmR50dXGsrmPdQ74-Nk
+Content-Type: application/json
+
+{
+    "name":"newbook"
+}
+###
+DELETE   http://localhost:4000/user/book/64d4541e0d0764e6790f2b7b
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTY5MTYzNTc3NSwiZXhwIjoxNjkxNzIyMTc1fQ.H4ZMsI3pPBqkinVEvrsQ9taQdmR50dXGsrmPdQ74-Nk
+###
