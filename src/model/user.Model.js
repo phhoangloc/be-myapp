@@ -54,6 +54,9 @@ const userSchema = Schema({
     cart: [
         { type: Schema.Types.ObjectId, ref: "cart" }
     ],
+    blogs: [
+        { type: Schema.Types.ObjectId, ref: "blog" }
+    ],
     infor: {
         fullname: String,
         avata: String,

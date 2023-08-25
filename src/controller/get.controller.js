@@ -1,6 +1,6 @@
 const bookModel = require('../model/book.Model')
 const userModel = require('../model/user.Model')
-
+const blogModel = require("../model/blog.Model")
 const viewBook = async (req, res) => {
 
     const query = req.query
@@ -38,7 +38,8 @@ const viewUser = async (req, res) => {
         .findOne({ "_id": id })
         .sort(query.sort ? query.sort : {})
         .limit(query.limit ? query.limit : {})
-        .populate("books", "name")
+        .populate("books")
+        .populate("blogs")
         .exec()
         .catch((error) => {
             outPut.success = false
@@ -48,6 +49,32 @@ const viewUser = async (req, res) => {
         .then(data => {
             outPut.success = true
             outPut.data = data
+            res.json(outPut)
+        })
+
+}
+const viewBlog = async (req, res) => {
+    const query = req.query
+
+    const outPut = {}
+
+    await blogModel.find({})
+        .find(query.id ? { "_id": query.id } : {})
+        .find(query.title ? { "name": query.title } : {})
+        .find(query.search ? { "title": { $regex: query.search } } : {})
+        .find(query.author ? { "author": query.author } : {})
+        .find(query.slug ? { "slug": query.slug } : {})
+        .limit(query.limit ? query.limit : {})
+        .populate("author", "username")
+        .exec()
+        .catch((error) => {
+            outPut.success = false
+            res.send(outPut)
+            throw error.message
+        })
+        .then(data => {
+            data.length ? outPut.success = true : outPut.success = false
+            outPut.data = data.filter(item => query.owner ? item.owner.username === query.owner : item)
             res.json(outPut)
         })
 
@@ -69,10 +96,13 @@ const viewUserExist = async (req, res) => {
         })
 }
 
+
+
 const viewController = {
     viewBook,
     viewUser,
-    viewUserExist
+    viewUserExist,
+    viewBlog,
 }
 
 module.exports = viewController

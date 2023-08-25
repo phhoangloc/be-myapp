@@ -3,6 +3,7 @@ const bookModel = require('../model/book.Model')
 const bcryptjs = require('bcryptjs')
 const transporter = require('../connects/email')
 const jwt = require('jsonwebtoken');
+const blogModel = require('../model/blog.Model');
 
 var registercode
 
@@ -16,7 +17,7 @@ const outPut = {}
 
 const createUser = async (req, res, next) => {
     const body = req.body
-    if (parseInt(body.registercode) === parseInt(registercode)) {
+    if (parseInt(body.code) === parseInt(registercode)) {
         const salt = bcryptjs.genSaltSync(10);
         const mahoa_password = req.body.password && bcryptjs.hashSync(req.body.password.toString(), salt);
         body.password = mahoa_password
@@ -70,7 +71,7 @@ const sendMailToActive = (req, res) => {
         subject: 'Active your Account',
         html: `
         <p style="text-align:center">Thanks for you registering!<p>
-        <p style="text-align:center">Please click <a style="font-weight:bold;color:green" href=${process.env.REACT_APP_URL}/active/${req.body.email}>here</a> to acctive your account<p>`
+        <p style="text-align:center">Please click <a style="font-weight:bold;color:green" href=${process.env.NODE_APP_URL}/active/${req.body.email}>here</a> to acctive your account<p>`
     }
 
     transporter.sendMail(mainOptions)
@@ -87,7 +88,7 @@ const sendMailToActive = (req, res) => {
 }
 
 const activeAccount = (req, res) => {
-    userModel.updateOne({ "email": req.body.email }, { "active": true })
+    userModel.updateOne({ "email": req.params.email }, { "active": true })
         .catch((error) => {
             outPut.success = false
             outPut.msg = error.message
@@ -180,6 +181,51 @@ const createBook = async (req, res) => {
         })
 }
 
+const createBlog = async (req, res) => {
+    const userId = res.id
+    const body = req.body
+    body.author = userId
+    const newBlog = await blogModel.create(body)
+    const user = await userModel.findOne({ "_id": userId })
+    const userBlogs = user.blogs
+    const newBlogs = [...userBlogs, newBlog._id]
+    await userModel.updateOne({ "_id": userId }, { "blogs": newBlogs })
+        .catch((error) => {
+            outPut.success = false
+            outPut.msg = error.message
+            res.send(outPut)
+            throw error.message
+        }).then(() => {
+            outPut.success = true
+            outPut.msg = "your blog have been created"
+            res.json(outPut)
+        })
+}
+
+const UploadBlogCover = (req, res) => {
+    const uploadFile = req.files.file;
+    const namefile = uploadFile.name
+    uploadFile.mv(`public//img//blog//${namefile}`, (err) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(namefile)
+        }
+    })
+}
+
+const UploadAvata = (req, res) => {
+    const uploadFile = req.files.file;
+    const namefile = uploadFile.name
+    uploadFile.mv(`public//img//avata//${namefile}`, (err) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(namefile)
+        }
+    })
+}
+
 const postController = {
     createUser,
     sendMailToRegister,
@@ -187,6 +233,10 @@ const postController = {
     activeAccount,
     login,
 
-    createBook
+    createBook,
+    createBlog,
+    UploadBlogCover,
+
+    UploadAvata
 }
 module.exports = postController
