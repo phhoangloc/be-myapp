@@ -5,6 +5,7 @@ const putController = require("../controller/put.controller")
 const postController = require("../controller/post.controller")
 const getController = require("../controller/get.controller")
 const middlewares = require("../midleware/midlewares")
+const viewController = require("../controller/get.controller")
 
 //userExist
 app.get('/userexist', getController.viewUserExist)
@@ -44,4 +45,10 @@ app.put('/user/blog/:id', middlewares.UserAuthen, putController.updateBlog)
 app.delete('/user/blog/:id', middlewares.UserAuthen, deleteController.deleteBlog)
 
 
+//view cart
+app.get('/user/cart', middlewares.UserAuthen, viewController.viewCart)
+//create cart
+app.post('/user/cart/:bookid', middlewares.UserAuthen, postController.createCart)
 module.exports = app
+//view cart
+app.put('/user/cart/:id', middlewares.UserAuthen, putController.updateCart)

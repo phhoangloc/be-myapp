@@ -1,6 +1,7 @@
 const bookModel = require('../model/book.Model')
 const userModel = require('../model/user.Model')
 const blogModel = require("../model/blog.Model")
+const path = require('path')
 const viewBook = async (req, res) => {
 
     const query = req.query
@@ -31,15 +32,58 @@ const viewBook = async (req, res) => {
 
 }
 const viewUser = async (req, res) => {
+
     const id = res.id
     const query = req.query
     const outPut = {}
     await userModel
-        .findOne({ "_id": id })
-        .sort(query.sort ? query.sort : {})
-        .limit(query.limit ? query.limit : {})
+        .findOne({ "_id": id }, "username email position active infor")
         .populate("books")
         .populate("blogs")
+        .populate({
+            path: "carts",
+            populate: { select: "username", path: "borrower" },
+        })
+        .populate({
+            path: "carts",
+            populate: { select: "username", path: "lender" },
+        })
+        .populate({
+            path: "carts",
+            populate: { select: "name", path: "books" },
+        })
+        .exec()
+        .catch((error) => {
+            outPut.success = false
+            res.send(outPut)
+            throw error.message
+        })
+        .then(data => {
+            outPut.success = true
+            outPut.data = data
+            res.json(outPut)
+        })
+
+}
+//admin
+const viewAllUser = async (req, res) => {
+    const outPut = {}
+    await userModel
+        .find({})
+        .populate("books")
+        .populate("blogs")
+        .populate({
+            path: "carts",
+            populate: { select: "username", path: "borrower" },
+        })
+        .populate({
+            path: "carts",
+            populate: { select: "username", path: "lender" },
+        })
+        .populate({
+            path: "carts",
+            populate: { select: "name", path: "books" },
+        })
         .exec()
         .catch((error) => {
             outPut.success = false
@@ -95,7 +139,43 @@ const viewUserExist = async (req, res) => {
             res.json(outPut)
         })
 }
+const viewCart = async (req, res) => {
+    const id = res.id
 
+    const outPut = {}
+
+    await userModel.findOne({ "_id": id }, "carts")
+        .populate("carts")
+        .populate(
+            {
+                path: "carts",
+                populate: { path: "borrower", select: "username" }
+            }
+        )
+        .populate(
+            {
+                path: "carts",
+                populate: { path: "lender", select: "username" }
+            }
+        )
+        .populate(
+            {
+                path: "carts",
+                populate: { path: "books", select: "name" }
+            }
+        )
+        .exec()
+        .catch((error) => {
+            outPut.success = false
+            res.send(outPut)
+            throw error.message
+        })
+        .then(data => {
+            outPut.success = true
+            outPut.data = data
+            res.json(outPut)
+        })
+}
 
 
 const viewController = {
@@ -103,6 +183,9 @@ const viewController = {
     viewUser,
     viewUserExist,
     viewBlog,
+    viewCart,
+    //admin,
+    viewAllUser,
 }
 
 module.exports = viewController

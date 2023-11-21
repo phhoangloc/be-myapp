@@ -51,7 +51,7 @@ const userSchema = Schema({
     borowedbooks: [
         { type: Schema.Types.ObjectId, ref: "book" }
     ],
-    cart: [
+    carts: [
         { type: Schema.Types.ObjectId, ref: "cart" }
     ],
     blogs: [

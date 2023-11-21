@@ -2,6 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 const bookSchema = Schema({
+    genre: {
+        type: String,
+        default: "book",
+    },
     img: {
         type: String,
         require: true,

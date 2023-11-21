@@ -1,6 +1,7 @@
 const userModel = require('../model/user.Model')
 const bookModel = require('../model/book.Model')
 const blogModel = require('../model/blog.Model')
+const cartModel = require('../model/cart.Model')
 const updateUser = (req, res) => {
     const id = res.id
     const body = req.body
@@ -66,10 +67,32 @@ const updateBlog = async (req, res) => {
         res.json("you re not blog's author, you cant update this book")
     }
 }
+const updateCart = async (req, res) => {
+    const outPut = {}
+
+    const id = req.params.id
+    const userId = res.id
+    const carts = await userModel.findOne({ "_id": userId }, "carts").populate("carts")
+    const cart = carts.carts.filter(item => item._id.toString() === id)
+    const books = cart[0].books
+    const newBooks = books.filter(item => item.toString() != req.body.bookid)
+    await cartModel.updateOne({ "_id": id }, { books: newBooks })
+        .catch((error) => {
+            outPut.success = false
+            outPut.msg = error.message
+            res.send(outPut)
+            throw error.message
+        }).then(() => {
+            outPut.success = true
+            outPut.msg = "your cart have been updated successfully"
+            res.json(outPut)
+        })
+}
 const putController = {
     updateUser,
     updateBook,
-    updateBlog
+    updateBlog,
+    updateCart
 }
 
 module.exports = putController

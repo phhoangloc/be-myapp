@@ -4,6 +4,7 @@ const bcryptjs = require('bcryptjs')
 const transporter = require('../connects/email')
 const jwt = require('jsonwebtoken');
 const blogModel = require('../model/blog.Model');
+const cartModel = require('../model/cart.Model');
 
 var registercode
 
@@ -226,6 +227,48 @@ const UploadAvata = (req, res) => {
     })
 }
 
+const createCart = async (req, res) => {
+    const userId = res.id
+    const bookId = req.params.bookid
+    const user = await userModel.findOne({ "_id": userId })
+    const book = await bookModel.findOne({ "_id": bookId })
+    const cart = await cartModel.findOne({ "borrower": userId, "lender": book.owner })
+    const body = {
+        borrower: userId,
+        lender: book.owner,
+    }
+    if (!cart) {
+        body.books = [bookId]
+        const result = await cartModel.create(body)
+
+        await userModel.updateOne({ "_id": userId }, { "carts": [...user.carts, result && result._id] })
+            .catch((error) => {
+                outPut.success = false
+                outPut.msg = error.message
+                res.send(outPut)
+            }).then(() => {
+                outPut.success = true
+                outPut.msg = "your cart have been created"
+                res.json(outPut)
+            })
+    } else {
+        const cartbooks = cart.books.filter(item => item.toString() !== bookId)
+        body.books = [...cartbooks, bookId]
+        await cartModel.updateOne({ "_id": cart._id }, body)
+            .catch((error) => {
+                outPut.success = false
+                outPut.msg = error.message
+                res.send(outPut)
+            }).then(() => {
+                outPut.success = true
+                outPut.msg = "your cart have been update"
+                res.json(outPut)
+            })
+    }
+
+
+
+}
 const postController = {
     createUser,
     sendMailToRegister,
@@ -237,6 +280,9 @@ const postController = {
     createBlog,
     UploadBlogCover,
 
-    UploadAvata
+    UploadAvata,
+
+    createCart,
+
 }
 module.exports = postController

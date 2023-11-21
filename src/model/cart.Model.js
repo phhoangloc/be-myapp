@@ -5,7 +5,7 @@ const cartSchema = Schema({
     process: {
         type: String,
         enum: {
-            values: ['add', 'cancel', 'request', 'refuse', 'accept', 'pay', 'send', 'received', 'return', 'finish'],
+            values: ['add', 'cancel', 'request', 'refuse', 'accept'],
             message: '{VALUE} is not supported'
         },
         default: 'add',
@@ -30,24 +30,11 @@ const cartSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: "book",
         require: true,
-        unique: true
     }],
-    dateRequest: {
+    dateUpdate: {
         type: Date,
         default: Date.now,
-    },
-    dateReceived: {
-        type: Date,
-        default: null,
-    },
-    dateReturn: {
-        type: Date,
-        default: null,
-    },
-    dateFinish: {
-        type: Date,
-        default: null,
     }
 })
 
-module.exports = mongoose.model('carts', cartSchema);
+module.exports = mongoose.model('cart', cartSchema);
