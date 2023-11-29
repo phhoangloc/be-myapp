@@ -9,39 +9,21 @@ Content-Type: application/json
 }
 ###
 
-GET http://localhost:4000/admin/user/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTcwMDUzNjE1NSwiZXhwIjoxNzAwNjIyNTU1fQ.AXz-Zh-X77wc7MSQc0k2nUad-B2t2hrcHOpP9Fp8vko
-Content-Type: application/json
+GET http://localhost:4000/blog
+Content-Type: 'application/json',
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTcwMTA3NjkyMCwiZXhwIjoxNzAxMTYzMzIwfQ.j7C9UTJmPypbaTRGe5HekAriY77wCWxdOgv0pj4szys
 ###
 
-Post http://localhost:4000/user/cart/63feff4e1c3860495ddbfbc1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTY5NTYyNDQ2NSwiZXhwIjoxNjk1NzEwODY1fQ.esr9FpNIUaBy78yYEg8JMAm9mAR24zWFPFsdTGD3AYU
-
+DELETE http://localhost:4000/admin/blogs/656550d6fc64b294808145da
+Content-Type: 'application/json',
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTcwMTA3Njg0MCwiZXhwIjoxNzAxMTYzMjQwfQ.k00utNKStHkMSj3qe-fj8p1mlqQEpBwUYQms_c3vYpY
 ###
-Put http://localhost:4000/user/cart/6511442ccd9ba7c1733b1780
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTY5NTYzMzkxNCwiZXhwIjoxNjk1NzIwMzE0fQ.w0xyNvOGQ5uCtyyLckb3KgXGWr6NiM3hxyHcH0ozUmM
+
+POST   http://localhost:4000/user/blog
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTcwMTA3Njg0MCwiZXhwIjoxNzAxMTYzMjQwfQ.k00utNKStHkMSj3qe-fj8p1mlqQEpBwUYQms_c3vYpY
 
 {
-    "bookid":"641424d68f0f03c60ab9ede0"
+    "title":"newbook"
 }
-
 ###
-DELETE   http://localhost:4000/user/blog/64e425da99ebe2d40fb44e4a
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTY5MjY3MTgyOCwiZXhwIjoxNjkyNzU4MjI4fQ.NqvPUyPbwD_njQxig-5rD6FR_Okr1YXL7GJMt0AD78Y
-###
-
-GET https://graph.instagram.com/6263462797068641/media?fields=id,media_url,caption,permalink&access_token=IGQWRPbTlheW9pY3dJTGVqMlNpbUxoMjNVYVJFbTcxRHpySTltTnVXV1hvc3VoRnVGNmhPdkE0U1dlQmRLWS1mTjN3TWFMVWZANRzB1V3R0Wl8yc3VlSFVrN3lZATmtCYUNlYnA1RklIbkhYU2s0aVhwYjM1bTFOTFEZD
-
-###
-
-GET https://api.instagram.com/oauth/authorize?client_id=611303537728924&redirect_uri=https://localhost/bringaccessibility/&scope=user_profile,user_media&response_type=code
-###
-Post https://api.instagram.com/oauth/access_token
-Content-Type: application/x-www-form-urlencoded
-
-client_id=611303537728924
-client_secret=5125512ff4c8e2226c26fc726df66264
-grant_type=authorization_code,
-redirect_uri=https://localhost/bringaccessibility/
-code=AQC2GgizA2xLYY0gYCuLKboV_Z3MGdv5dd7eUsFulqZiq3GL2pWskSAZFQ6oLgyuQKek2-bha1vTIuQVWrFKLUvAPYT9ldE0RLZEGZ_F2E7VLY9Nue4X0jHUH5cgRDfh-5wKIrkxv_SVN0aQ9ACbb-79fhcJpn9JNoT37SYmnfvBlLKXkpICD45KTn0BT_G89GbdYB2QLX43e6W_a03_HNz0QR-Z-tQh4I6DLbm1CpALBQ

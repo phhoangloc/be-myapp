@@ -266,8 +266,6 @@ const createCart = async (req, res) => {
             })
     }
 
-
-
 }
 const postController = {
     createUser,

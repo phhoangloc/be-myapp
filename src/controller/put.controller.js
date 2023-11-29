@@ -25,8 +25,10 @@ const updateBook = async (req, res) => {
     const body = req.body
     const outPut = {}
     const book = await bookModel.findOne({ "_id": id })
+    const admin = await userModel.findOne({ "_id": userId })
+    const isAdmin = admin.position === "admin" ? true : false
     const ownerId = book.owner._id
-    if (ownerId.toString() === userId) {
+    if (ownerId.toString() === userId || isAdmin) {
         bookModel.updateOne({ "_id": id }, body)
             .catch((error) => {
                 outPut.success = false
@@ -50,7 +52,7 @@ const updateBlog = async (req, res) => {
     const outPut = {}
     const blog = await blogModel.findOne({ "_id": id })
     const authorId = blog.author._id
-    if (authorId.toString() === userId) {
+    if (authorId.toString() === userId || isAdmin) {
         blogModel.updateOne({ "_id": id }, body)
             .catch((error) => {
                 outPut.success = false

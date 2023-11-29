@@ -28,13 +28,6 @@ app.post('/user/avata', middlewares.UserAuthen, postController.UploadAvata)
 //update User
 app.put('/user/:id', middlewares.UserAuthen, putController.updateUser)
 
-//create book
-app.post('/user/book/', middlewares.UserAuthen, postController.createBook)
-//update Book
-app.put('/user/book/:id', middlewares.UserAuthen, putController.updateBook)
-//delete Book
-app.delete('/user/book/:id', middlewares.UserAuthen, deleteController.deleteBook)
-
 //create blog
 app.post('/user/blog/', middlewares.UserAuthen, postController.createBlog)
 //upload Blog Cover

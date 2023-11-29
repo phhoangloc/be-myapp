@@ -9,9 +9,11 @@ const deleteBook = async (req, res) => {
     const userId = res.id
     const outPut = {}
     const book = await bookModel.findOne({ "_id": id })
+    const admin = await userModel.findOne({ "_id": userId })
+    const isAdmin = admin.position === "admin" ? true : false
     const ownerId = book.owner._id
-    if (ownerId.toString() === userId) {
-        const user = await userModel.findOne({ "_id": userId })
+    if (ownerId.toString() === userId || isAdmin) {
+        const user = await userModel.findOne({ "_id": ownerId })
         const userBooks = user.books
         const newBooks = userBooks.filter(item => item._id != id)
         await userModel.updateOne({ "_id": userId }, { "books": newBooks })
@@ -32,6 +34,7 @@ const deleteBook = async (req, res) => {
                 outPut.msg = "your book have been delete successfully"
                 res.json(outPut)
             })
+
     } else {
         res.json("you re not book's owner, you cant delete this book")
     }
@@ -43,9 +46,11 @@ const deleteBlog = async (req, res) => {
     const userId = res.id
     const outPut = {}
     const blog = await blogModel.findOne({ "_id": id })
+    const admin = await userModel.findOne({ "_id": userId })
+    const isAdmin = admin.position === "admin" ? true : false
     const authorId = blog.author._id
-    if (authorId.toString() === userId) {
-        const user = await userModel.findOne({ "_id": userId })
+    if (authorId.toString() === userId || isAdmin) {
+        const user = await userModel.findOne({ "_id": authorId })
         const userBooks = user.blogs
         const newBooks = userBooks.filter(item => item._id != id)
         await userModel.updateOne({ "_id": userId }, { "blogs": newBooks })
@@ -72,14 +77,32 @@ const deleteBlog = async (req, res) => {
 
 }
 
+//admin
+const deleteUser = async (req, res) => {
+    const id = req.params.id
+    const outPut = {}
+    await userModel.deleteOne({ "_id": id })
+        .catch((error) => {
+            outPut.success = false
+            outPut.msg = error.message
+            res.send(outPut)
+            throw error.message
+        }).then(() => {
+            outPut.success = true
+            outPut.msg = "user have been delete successfully"
+            res.json(outPut)
+        })
+
+}
+
 const deleteCart = async (req, res) => {
 
     const id = req.params.id
     const userId = res.id
     const outPut = {}
-    
+
     const user = await userModel.findOne({ "_id": userId })
-    const newCarts=user && user.carts.filter
+    const newCarts = user && user.carts.filter
 
     const cart = await cartModel.d({ "_id": id })
     const authorId = blog.author._id
@@ -113,7 +136,8 @@ const deleteCart = async (req, res) => {
 
 const deleteController = {
     deleteBook,
-    deleteBlog
+    deleteBlog,
+    deleteUser
 }
 
 module.exports = deleteController

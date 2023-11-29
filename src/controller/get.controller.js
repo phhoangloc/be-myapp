@@ -65,11 +65,16 @@ const viewUser = async (req, res) => {
         })
 
 }
+
 //admin
 const viewAllUser = async (req, res) => {
     const outPut = {}
+    const query = req.query
     await userModel
         .find({})
+        .find(query.search ? { "username": { $regex: query.search } } : {})
+        .sort(query.sort ? query.sort : {})
+        .limit(query.limit ? query.limit : {})
         .populate("books")
         .populate("blogs")
         .populate({
@@ -108,6 +113,7 @@ const viewBlog = async (req, res) => {
         .find(query.search ? { "title": { $regex: query.search } } : {})
         .find(query.author ? { "author": query.author } : {})
         .find(query.slug ? { "slug": query.slug } : {})
+        .sort(query.sort ? query.sort : {})
         .limit(query.limit ? query.limit : {})
         .populate("author", "username")
         .exec()
