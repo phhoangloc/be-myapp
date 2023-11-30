@@ -5,6 +5,7 @@ const transporter = require('../connects/email')
 const jwt = require('jsonwebtoken');
 const blogModel = require('../model/blog.Model');
 const cartModel = require('../model/cart.Model');
+const stream = require("stream");
 
 var registercode
 
@@ -215,16 +216,31 @@ const UploadBlogCover = (req, res) => {
     })
 }
 
-const UploadAvata = (req, res) => {
+const UploadAvata = async (req, res) => {
     const uploadFile = req.files.file;
-    const namefile = uploadFile.name
-    uploadFile.mv(`public//img//avata//${namefile}`, (err) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send(namefile)
-        }
-    })
+    const bufferStream = new stream.PassThrough();
+    bufferStream.end(uploadFile.buffer);
+    const { data } = await google.drive({ version: "v3", auth }).files.create({
+        media: {
+            mimeType: uploadFile.mimeType,
+            body: bufferStream,
+        },
+        requestBody: {
+            name: uploadFile.originalname,
+            parents: ["1_MKs0rO1Zre0hBmf4xSLcNPshPCpHsLM"],
+        },
+        fields: "id,name",
+    });
+    res.send(data.id)
+
+    // const namefile = uploadFile.name
+    // uploadFile.mv(`public//img//avata//${namefile}`, (err) => {
+    //     if (err) {
+    //         console.log(err);
+    //     } else {
+    //         res.send(namefile)
+    //     }
+    // })
 }
 
 const createCart = async (req, res) => {

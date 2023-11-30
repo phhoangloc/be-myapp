@@ -7,6 +7,8 @@ const bodyParser = require("body-parser")
 const cors = require("cors")
 const path = require('path');
 const fileUpload = require('express-fileupload')
+const multer = require("multer")
+const upload = multer();
 
 require('dotenv').config()
 
@@ -25,6 +27,8 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.json())
 
 app.use(cors())
+
+app.use(upload.any())
 
 routes(app)
 

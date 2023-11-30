@@ -27,3 +27,4 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyM
     "title":"newbook"
 }
 ###
+get http://localhost:5050/image
