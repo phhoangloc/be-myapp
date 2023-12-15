@@ -6,7 +6,15 @@ const jwt = require('jsonwebtoken');
 const blogModel = require('../model/blog.Model');
 const cartModel = require('../model/cart.Model');
 const stream = require("stream");
+const { google } = require('googleapis')
+const path = require('path')
 
+const auth = new google.auth.GoogleAuth(
+    {
+        keyFile: path.join(__dirname, "../../cred.json"),
+        scopes: ['https://www.googleapis.com/auth/drive']
+    }
+)
 var registercode
 
 const generateRandomCode = () => {
@@ -19,25 +27,19 @@ const outPut = {}
 
 const createUser = async (req, res, next) => {
     const body = req.body
-    if (parseInt(body.code) === parseInt(registercode)) {
-        const salt = bcryptjs.genSaltSync(10);
-        const mahoa_password = req.body.password && bcryptjs.hashSync(req.body.password.toString(), salt);
-        body.password = mahoa_password
-        userModel.create(body)
-            .catch((error) => {
-                outPut.success = false
-                outPut.message = error.message
-                res.json(outPut)
-                throw error.message
-            })
-            .then(() => {
-                next()
-            })
-    } else {
-        outPut.success = false
-        outPut.msg = "your code is not correct"
-        res.json(outPut)
-    }
+    const salt = bcryptjs.genSaltSync(10);
+    const mahoa_password = req.body.password && bcryptjs.hashSync(req.body.password.toString(), salt);
+    body.password = mahoa_password
+    userModel.create(body)
+        .catch((error) => {
+            outPut.success = false
+            outPut.message = error.message
+            res.json(outPut)
+            throw error.message
+        })
+        .then(() => {
+            next()
+        })
 }
 const sendMailToRegister = (req, res) => {
 
@@ -56,12 +58,12 @@ const sendMailToRegister = (req, res) => {
     transporter.sendMail(mainOptions)
         .catch((error) => {
             outPut.success = false
-            outPut.msg = error.message
+            outPut.message = error.message
             res.json(outPut)
             throw error.message
         }).then(() => {
             outPut.success = true
-            outPut.msg = "please check your email to register account"
+            outPut.message = "please check your email to register account"
             res.json(outPut)
         })
 }
@@ -217,30 +219,16 @@ const UploadBlogCover = (req, res) => {
 }
 
 const UploadAvata = async (req, res) => {
-    const uploadFile = req.files.file;
-    const bufferStream = new stream.PassThrough();
-    bufferStream.end(uploadFile.buffer);
-    const { data } = await google.drive({ version: "v3", auth }).files.create({
-        media: {
-            mimeType: uploadFile.mimeType,
-            body: bufferStream,
-        },
-        requestBody: {
-            name: uploadFile.originalname,
-            parents: ["1_MKs0rO1Zre0hBmf4xSLcNPshPCpHsLM"],
-        },
-        fields: "id,name",
-    });
-    res.send(data.id)
 
-    // const namefile = uploadFile.name
-    // uploadFile.mv(`public//img//avata//${namefile}`, (err) => {
-    //     if (err) {
-    //         console.log(err);
-    //     } else {
-    //         res.send(namefile)
-    //     }
-    // })
+    const uploadFile = req.files.file;
+    const namefile = uploadFile.name
+    uploadFile.mv(`public//img//avata//${namefile}`, (err) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.send(namefile)
+        }
+    })
 }
 
 const createCart = async (req, res) => {
@@ -283,6 +271,25 @@ const createCart = async (req, res) => {
     }
 
 }
+
+const uploadFile = async (req, res) => {
+    const uploadFile = req.files.file;
+    const bufferStream = new stream.PassThrough();
+    bufferStream.end(uploadFile.data);
+    const { data } = await google.drive({ version: "v3", auth }).files.create({
+        media: {
+            mimeType: uploadFile.mimeType,
+            body: bufferStream,
+        },
+        requestBody: {
+            name: uploadFile.name,
+            parents: ["1_MKs0rO1Zre0hBmf4xSLcNPshPCpHsLM"],
+        },
+        fields: "id,name",
+    });
+    res.json(data.id)
+}
+
 const postController = {
     createUser,
     sendMailToRegister,
@@ -297,6 +304,8 @@ const postController = {
     UploadAvata,
 
     createCart,
+
+    uploadFile
 
 }
 module.exports = postController

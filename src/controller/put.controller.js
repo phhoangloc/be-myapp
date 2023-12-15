@@ -19,6 +19,23 @@ const updateUser = (req, res) => {
             res.json(outPut)
         })
 }
+const updateUserByAdmin = (req, res) => {
+    const id = req.params.id
+    const body = req.body
+    const outPut = {}
+
+    userModel.updateOne({ "_id": id }, body)
+        .catch((error) => {
+            outPut.success = false
+            outPut.message = error.message
+            res.send(outPut)
+            throw error.message
+        }).then(() => {
+            outPut.success = true
+            outPut.message = "updated successfully"
+            res.json(outPut)
+        })
+}
 const updateBook = async (req, res) => {
     const id = req.params.id
     const userId = res.id
@@ -51,6 +68,8 @@ const updateBlog = async (req, res) => {
     const body = req.body
     const outPut = {}
     const blog = await blogModel.findOne({ "_id": id })
+    const admin = await userModel.findOne({ "_id": userId })
+    const isAdmin = admin.position === "admin" ? true : false
     const authorId = blog.author._id
     if (authorId.toString() === userId || isAdmin) {
         blogModel.updateOne({ "_id": id }, body)
@@ -92,6 +111,7 @@ const updateCart = async (req, res) => {
 }
 const putController = {
     updateUser,
+    updateUserByAdmin,
     updateBook,
     updateBlog,
     updateCart

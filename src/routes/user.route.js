@@ -6,6 +6,7 @@ const postController = require("../controller/post.controller")
 const getController = require("../controller/get.controller")
 const middlewares = require("../midleware/midlewares")
 const viewController = require("../controller/get.controller")
+const cors = require("cors")
 
 //userExist
 app.get('/userexist', getController.viewUserExist)
@@ -20,13 +21,18 @@ app.post('/signup', postController.createUser, postController.sendMailToActive)
 //login
 app.post('/login', postController.login)
 
+
 //middeware User 
+
 //viewUser
 app.get('/user', middlewares.UserAuthen, getController.viewUser)
+
 //update User update avata
 app.post('/user/avata', middlewares.UserAuthen, postController.UploadAvata)
 //update User
 app.put('/user/:id', middlewares.UserAuthen, putController.updateUser)
+//upload
+app.post('/user/upload', middlewares.UserAuthen, postController.uploadFile)
 
 //create blog
 app.post('/user/blog/', middlewares.UserAuthen, postController.createBlog)

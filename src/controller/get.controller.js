@@ -72,6 +72,7 @@ const viewAllUser = async (req, res) => {
     const query = req.query
     await userModel
         .find({})
+        .find(query.username ? { "username": query.username } : {})
         .find(query.search ? { "username": { $regex: query.search } } : {})
         .sort(query.sort ? query.sort : {})
         .limit(query.limit ? query.limit : {})
@@ -92,11 +93,11 @@ const viewAllUser = async (req, res) => {
         .exec()
         .catch((error) => {
             outPut.success = false
-            res.send(outPut)
+            res.json(outPut)
             throw error.message
         })
         .then(data => {
-            outPut.success = true
+            data.length ? outPut.success = true : outPut.success = false
             outPut.data = data
             res.json(outPut)
         })

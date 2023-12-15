@@ -1,6 +1,6 @@
 
 
-POST   http://localhost:4000/login
+POST   https://localhost:4000/login
 Content-Type: application/json
 
 {
@@ -9,9 +9,7 @@ Content-Type: application/json
 }
 ###
 
-GET http://localhost:4000/blog
-Content-Type: 'application/json',
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTcwMTA3NjkyMCwiZXhwIjoxNzAxMTYzMzIwfQ.j7C9UTJmPypbaTRGe5HekAriY77wCWxdOgv0pj4szys
+GET https://126.4.193.90:4000/book
 ###
 
 DELETE http://localhost:4000/admin/blogs/656550d6fc64b294808145da
@@ -26,5 +24,3 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyM
 {
     "title":"newbook"
 }
-###
-get http://localhost:5050/image

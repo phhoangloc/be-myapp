@@ -7,8 +7,22 @@ const bodyParser = require("body-parser")
 const cors = require("cors")
 const path = require('path');
 const fileUpload = require('express-fileupload')
-const multer = require("multer")
-const upload = multer();
+const https = require('https');
+const socketIo = require('socket.io');
+const fs = require('fs');
+
+const httpsOptions = {
+    key: fs.readFileSync('localhost-key.pem'),
+    cert: fs.readFileSync('localhost.pem'),
+};
+
+const server = https.createServer(httpsOptions, app);
+
+const io = socketIo(server, {
+    cors: {
+        origin: ['https://www.locand.jp']
+    }
+});
 
 require('dotenv').config()
 
@@ -28,11 +42,31 @@ app.use(bodyParser.json())
 
 app.use(cors())
 
-app.use(upload.any())
-
 routes(app)
 
-app.listen(port, (err) => {
+var online = []
+
+io.on('connection', (socket) => {
+    socket.emit('wel', 'Welcome to the chat!');
+
+    socket.on("user", (user) => {
+        socket.username = user.name
+        online = [...online.filter(item => item != socket.username), socket.username]
+        socket.emit("online", online)
+        socket.broadcast.emit("online", online)
+        socket.emit("msg", { sender: true, ...user });
+        socket.broadcast.emit("msg", { sender: false, ...user });
+    })
+
+    socket.on('disconnect', () => {
+        online.filter(item => item !== socket.username)
+        socket && socket.username && socket.broadcast.emit("msg", { type: "leave", msg: socket.username + ' disconnected', online });
+
+    });
+});
+
+
+server.listen(port, (err) => {
     if (err) throw err
     console.log("server is connectted with port: " + port)
 })
