@@ -27,6 +27,8 @@ app.post('/login', postController.login)
 //viewUser
 app.get('/user', middlewares.UserAuthen, getController.viewUser)
 
+//viewAll
+app.get('/user/alluser', middlewares.UserAuthen, getController.Alluser)
 //update User update avata
 app.post('/user/avata', middlewares.UserAuthen, postController.UploadAvata)
 //update User
@@ -51,3 +53,17 @@ app.post('/user/cart/:bookid', middlewares.UserAuthen, postController.createCart
 module.exports = app
 //view cart
 app.put('/user/cart/:id', middlewares.UserAuthen, putController.updateCart)
+
+//view Room
+app.get('/user/room', middlewares.UserAuthen, viewController.viewRoom)
+//create Room
+app.post('/user/room', middlewares.UserAuthen, postController.createRoom)
+
+//create Msg
+app.post('/user/msg', middlewares.UserAuthen, postController.createMsg)
+
+
+//view Noti
+app.get('/noti', middlewares.UserAuthen, getController.viewNoti)
+//update Noti
+app.put('/noti', middlewares.UserAuthen, putController.updateNoti)

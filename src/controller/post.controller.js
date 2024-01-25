@@ -5,6 +5,8 @@ const transporter = require('../connects/email')
 const jwt = require('jsonwebtoken');
 const blogModel = require('../model/blog.Model');
 const cartModel = require('../model/cart.Model');
+const roomModel = require("../model/room.Model")
+const messageModel = require("../model/message.model")
 const stream = require("stream");
 const { google } = require('googleapis')
 const path = require('path')
@@ -290,22 +292,75 @@ const uploadFile = async (req, res) => {
     res.json(data.id)
 }
 
+const createRoom = async (req, res) => {
+    const id = res.id
+    const query = req.query
+
+    if (query.clientUser) {
+        const clientIsHost = await roomModel.findOne({ "host": query.clientUser, "member": id })
+        const hostIsClient = await roomModel.findOne({ "host": id, "member": query.clientUser })
+
+        if (clientIsHost) {
+            res.send(clientIsHost)
+        } else {
+            if (hostIsClient) {
+                res.send(hostIsClient)
+            } else {
+                const body = {}
+                body.host = id
+                body.member = [query.clientUser]
+                await roomModel.create(body)
+                    .catch((error) => {
+                        outPut.success = false
+                        outPut.msg = error.message
+                        res.send(outPut)
+                    }).then((data) => {
+                        res.send(data)
+                    })
+
+            }
+        }
+
+    } else {
+        res.send("client username is not exist")
+    }
+
+}
+const createMsg = async (req, res) => {
+    const id = res.id
+
+    const body = req.body
+
+    await messageModel.create(body)
+        .catch((error) => {
+            outPut.success = false
+            outPut.msg = error.message
+            res.send(outPut)
+        }).then(async (data) => {
+            const result = await roomModel.findOne({ "_id": body.room }, "messages")
+            const newMessages = [...result.messages, data]
+            await roomModel.updateOne({ "_id": body.room }, { "messages": newMessages })
+            outPut.success = true
+            outPut.msg = "your message have been create"
+            res.json(outPut)
+        })
+
+}
+
 const postController = {
     createUser,
     sendMailToRegister,
     sendMailToActive,
     activeAccount,
     login,
-
     createBook,
     createBlog,
     UploadBlogCover,
-
     UploadAvata,
-
     createCart,
-
-    uploadFile
+    uploadFile,
+    createRoom,
+    createMsg,
 
 }
 module.exports = postController

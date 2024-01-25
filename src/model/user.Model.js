@@ -67,13 +67,23 @@ const userSchema = Schema({
         type: Number,
         default: 10,
     },
-    notification: [{
+
+    notifications: [{
         msg: String,
+        type: {
+            type: String,
+            enum: {
+                values: ['noti', 'msg'],
+                message: '{VALUE} is not supported'
+            },
+            default: 'noti',
+        },
+        from: { type: Schema.Types.ObjectId, ref: "user" },
         seen: {
             type: Boolean,
             default: false
         }
-    }],
+    }]
 
 })
 

@@ -1,6 +1,7 @@
 const bookModel = require('../model/book.Model')
 const userModel = require('../model/user.Model')
 const blogModel = require("../model/blog.Model")
+const roomModel = require("../model/room.Model")
 const path = require('path')
 const viewBook = async (req, res) => {
 
@@ -65,7 +66,6 @@ const viewUser = async (req, res) => {
         })
 
 }
-
 //admin
 const viewAllUser = async (req, res) => {
     const outPut = {}
@@ -137,13 +137,11 @@ const viewUserExist = async (req, res) => {
         .findOne(query.username && { "username": query.username })
         .findOne(query.email && { "email": query.email })
         .catch((error) => {
-            outPut.success = false
-            res.send(outPut)
+            res.send(false)
             throw error.message
         })
         .then(data => {
-            data ? outPut.success = true : outPut.success = false
-            res.json(outPut)
+            data ? res.send(true) : res.send(false)
         })
 }
 const viewCart = async (req, res) => {
@@ -183,8 +181,80 @@ const viewCart = async (req, res) => {
             res.json(outPut)
         })
 }
+const viewRoom = async (req, res) => {
+    const id = res.id
+    const clientId = req.query.clientId
+    const roomId = req.query.roomId
+    const outPut = {}
 
+    await roomModel.find()
+        .find(roomId ? { "_id": roomId } : {})
+        .populate({
+            path: 'messages',
+            select: ['msg', "userId"],
+            populate: { path: 'userId', select: 'username' }
+        })
+        .exec()
+        .catch((error) => {
+            outPut.success = false
+            res.send(outPut)
+            throw error.message
+        })
+        .then(data => {
+            outPut.success = true
+            outPut.data = data
+            res.json(outPut)
+        })
+}
+const viewNoti = async (req, res) => {
+    const id = res.id
+    const query = req.query
+    const outPut = {}
+    if (query.seen) {
+        if (query.seen === "false" && (query.from || query.type)) {
+            const user = await userModel.findOne({ "_id": id }, "notifications")
+            const notifications = user.notifications
+            const newNoti = notifications.filter(item => item.seen === false && (item.type === query.type || item.from === query.from))
+            outPut.success = true
+            outPut.data = newNoti
+            res.json(outPut)
+        } else {
+            outPut.success = true
+            outPut.data = []
+            res.json(outPut)
+        }
+    } else {
+        await userModel.findOne({ "_id": id }, "notifications")
+            .exec()
+            .catch((error) => {
+                outPut.success = false
+                res.send(outPut)
+                throw error.message
+            })
+            .then(data => {
+                outPut.success = true
+                outPut.data = data.notifications
+                res.json(outPut)
+            })
+    }
 
+}
+const Alluser = async (req, res) => {
+    const outPut = {}
+    await userModel
+        .find({}, "username infor.avata")
+        .exec()
+        .catch((error) => {
+            outPut.success = false
+            res.json(outPut)
+            throw error.message
+        })
+        .then(data => {
+            data.length ? outPut.success = true : outPut.success = false
+            outPut.data = data
+            res.json(outPut)
+        })
+}
 const viewController = {
     viewBook,
     viewUser,
@@ -193,6 +263,9 @@ const viewController = {
     viewCart,
     //admin,
     viewAllUser,
+    viewRoom,
+    viewNoti,
+    Alluser
 }
 
 module.exports = viewController

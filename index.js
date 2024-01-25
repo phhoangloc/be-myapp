@@ -7,7 +7,7 @@ const bodyParser = require("body-parser")
 const cors = require("cors")
 const path = require('path');
 const fileUpload = require('express-fileupload')
-const https = require('https');
+const https = require('http');
 const socketIo = require('socket.io');
 const fs = require('fs');
 
@@ -20,7 +20,7 @@ const server = https.createServer(httpsOptions, app);
 
 const io = socketIo(server, {
     cors: {
-        origin: ['https://www.locand.jp']
+        origin: ['http://localhost:3000']
     }
 });
 
@@ -49,6 +49,25 @@ var online = []
 io.on('connection', (socket) => {
     socket.emit('wel', 'Welcome to the chat!');
 
+    socket.on("hello", data => {
+        socket.username = data.username
+        socket.broadcast.emit("hello", data)
+        online = [...online.filter(item => item.username != socket.username), data]
+        socket.emit("online", online)
+        socket.broadcast.emit("online", online)
+    })
+
+    socket.on("enterRoom", (data) => {
+        socket.join(data);
+    })
+
+    socket.on("signal", (data) => {
+
+        socket.emit("signal", data)
+        socket.broadcast.emit("signal", data)
+        socket.to(data.room).emit("signal", data)
+    })
+
     socket.on("user", (user) => {
         socket.username = user.name
         online = [...online.filter(item => item != socket.username), socket.username]
@@ -58,9 +77,10 @@ io.on('connection', (socket) => {
         socket.broadcast.emit("msg", { sender: false, ...user });
     })
 
-    socket.on('disconnect', () => {
-        online.filter(item => item !== socket.username)
-        socket && socket.username && socket.broadcast.emit("msg", { type: "leave", msg: socket.username + ' disconnected', online });
+    socket.on('disconnect', async () => {
+        online = online.filter(item => item.username !== socket.username)
+        socket.broadcast.emit("online", online)
+        socket.broadcast.emit("wel", socket.username + ' is disconnected');
 
     });
 });

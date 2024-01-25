@@ -109,12 +109,45 @@ const updateCart = async (req, res) => {
             res.json(outPut)
         })
 }
+const updateNoti = async (req, res) => {
+    // res.send(res.id)
+    const outPut = {}
+    const userId = res.id
+    const id = req.query.id
+    const body = req.body
+
+    const user = await userModel.findOne({ "_id": id }, "notifications")
+    const notifications = user.notifications
+    const noti = {
+        msg: body.noti,
+        from: body.from,
+        type: body.type,
+        seen: body.seen ? body.seen : false,
+    }
+    const newNoti = notifications.filter((item) => item.from.toString() !== body.from.toString())
+
+    console.log(newNoti)
+
+    await userModel.updateOne({ "_id": id }, { "notifications": [...newNoti, noti] })
+        .catch((error) => {
+            outPut.success = false
+            outPut.msg = error.message
+            res.send(outPut)
+            throw error.message
+        }).then(() => {
+            outPut.success = true
+            outPut.msg = "your cart have been updated successfully"
+            res.json(outPut)
+        })
+
+}
 const putController = {
     updateUser,
     updateUserByAdmin,
     updateBook,
     updateBlog,
-    updateCart
+    updateCart,
+    updateNoti
 }
 
 module.exports = putController

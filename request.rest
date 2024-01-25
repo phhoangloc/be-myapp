@@ -1,26 +1,43 @@
 
 
-POST   https://localhost:4000/login
+Post   http://localhost:4000/login
 Content-Type: application/json
 
 {
-    "username":"lockheart",
+    "username":"hoangloc",
     "password":"123456"
 }
 ###
-
-GET https://126.4.193.90:4000/book
-###
-
-DELETE http://localhost:4000/admin/blogs/656550d6fc64b294808145da
-Content-Type: 'application/json',
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTcwMTA3Njg0MCwiZXhwIjoxNzAxMTYzMjQwfQ.k00utNKStHkMSj3qe-fj8p1mlqQEpBwUYQms_c3vYpY
-###
-
-POST   http://localhost:4000/user/blog
+GET http://localhost:4000/user/alluser
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTcwMTA3Njg0MCwiZXhwIjoxNzAxMTYzMjQwfQ.k00utNKStHkMSj3qe-fj8p1mlqQEpBwUYQms_c3vYpY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1Njk0YjM3ZjM3YWM0ZGMxMzM5YzY2MyIsImlhdCI6MTcwNTk4MDg3MywiZXhwIjoxNzA2MDY3MjczfQ.BPJlTlbiAiAoaIQbGvU_KgElMM3UyFmndDxmhwXSDJ8
+###
+
+POST http://localhost:4000/user/room?clientUser=hoangloc
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTcwNTU0NTY5NCwiZXhwIjoxNzA1NjMyMDk0fQ.DMoC6jgMwwnZLfXzwIiQH9Z6U1Z2NFnZT-hGE6xSTAo
+###
+POST http://localhost:4000/user/msg
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ZDM1OWEyMDAwODBjZDZmMzE1NWM2MCIsImlhdCI6MTcwNTU0NTY5NCwiZXhwIjoxNzA1NjMyMDk0fQ.DMoC6jgMwwnZLfXzwIiQH9Z6U1Z2NFnZT-hGE6xSTAo
 
 {
-    "title":"newbook"
+    "message": "aaa", 
+    "room": "65a88c2919653283fcd4e8a6", 
+    "username": "hoangloc"
 }
+### 
+
+//hoangloc
+PUT http://localhost:4000/noti?id=65a73ed24851c96715cb5e85
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1YTczZWQyNDg1MWM5NjcxNWNiNWU4NSIsImlhdCI6MTcwNTY1NTU0NCwiZXhwIjoxNzA1NzQxOTQ0fQ.sZ8py3KNweZhfAMk9pZvL5nN25AroR7vrPPV6i7csxM
+
+{
+    "noti":"hello"
+}
+
+### 
+get http://localhost:4000/noti?seen=false
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1YTczZWQyNDg1MWM5NjcxNWNiNWU4NSIsImlhdCI6MTcwNTY1NTU0NCwiZXhwIjoxNzA1NzQxOTQ0fQ.sZ8py3KNweZhfAMk9pZvL5nN25AroR7vrPPV6i7csxM
